@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dados Online</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+      background: #151923;
+      color: #f5f5f5;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      background: #222938;
+      padding: 32px 24px;
+      border-radius: 20px;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    p {
+      color: #b9c2d0;
+    }
+
+    select, button {
+      font: inherit;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 0;
+      margin: 6px;
+    }
+
+    select {
+      background: #fff;
+      color: #151923;
+    }
+
+    button {
+      background: #7c5cff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #957eff;
+    }
+
+    #dados {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 28px 0;
+    }
+
+    .dado {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      color: #222938;
+      border-radius: 16px;
+      font-size: 36px;
+      font-weight: bold;
+      box-shadow: 0 5px 0 #b9c2d0;
+    }
+
+    #total {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 24px;
+    }
+
+    #historial {
+      margin-top: 28px;
+      text-align: left;
+      border-top: 1px solid #414b5f;
+      padding-top: 16px;
+    }
+
+    #historial li {
+      margin: 8px 0;
+      color: #d7ddeb;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>🎲 Dados Online</h1>
+    <p>¡Elige tus dados y prueba tu suerte!</p>
+
+    <label for="cantidad">Número de dados:</label>
+    <select id="cantidad">
+      <option value="1">1 dado</option>
+      <option value="2">2 dados</option>
+      <option value="3">3 dados</option>
+      <option value="4">4 dados</option>
+      <option value="5">5 dados</option>
+      <option value="6">6 dados</option>
+    </select>
+
+    <div id="dados" aria-live="polite">
+      <div class="dado">?</div>
+    </div>
+
+    <button id="lanzar">Lanzar dados</button>
+
+    <div id="total" aria-live="polite">Total: —</div>
+
+    <section id="historial">
+      <h2>Últimas tiradas</h2>
+      <ol id="lista"></ol>
+    </section>
+  </main>
+
+  <script>
+    const cantidad = document.getElementById("cantidad");
+    const dados = document.getElementById("dados");
+    const total = document.getElementById("total");
+    const lista = document.getElementById("lista");
+    const lanzar = document.getElementById("lanzar");
+
+    const historial = [];
+
+    function numeroAleatorio(maximo) {
+      const limite = Math.floor(4294967296 / maximo) * maximo;
+      const buffer = new Uint32Array(1);
+
+      do {
+        crypto.getRandomValues(buffer);
+      } while (buffer[0] >= limite);
+
+      return (buffer[0] % maximo) + 1;
+    }
+
+    function tirarDados() {
+      const numeroDados = Number(cantidad.value);
+      const resultados = [];
+
+      dados.replaceChildren();
+
+      for (let i = 0; i < numeroDados; i++) {
+        const resultado = numeroAleatorio(6);
+        resultados.push(resultado);
+
+        const dado = document.createElement("div");
+        dado.className = "dado";
+        dado.textContent = resultado;
+        dado.setAttribute("aria-label", `Dado ${i + 1}: ${resultado}`);
+        dados.appendChild(dado);
+      }
+
+      const suma = resultados.reduce((a, b) => a + b, 0);
+      total.textContent = `Total: ${suma}`;
+
+      historial.unshift(
+        `${resultados.join(" + ")} = ${suma}`
+      );
+
+      historial.splice(10);
+
+      lista.replaceChildren();
+
+      historial.forEach((tirada) => {
+        const elemento = document.createElement("li");
+        elemento.textContent = tirada;
+        lista.appendChild(elemento);
+      });
+    }
+
+    lanzar.addEventListener("click", tirarDados);
+  </script>
+</body>
+</html>
