@@ -16,7 +16,7 @@
     <main>
         <h1>🎲 Dados Online</h1>
 
-        <p>¡Elige tus dados y prueba tu suerte!</p>
+        <p>¡Elige tus dados!</p>
 
         <label for="cantidad">Número de dados:</label>
 
@@ -28,6 +28,18 @@
             <option value="5">5 dados</option>
             <option value="6">6 dados</option>
         </select>
+
+        <label for="tipo">Tipo de dado:</label>
+
+        <select id="tipo">
+            <option value="4">4 caras</option>
+            <option value="6">6 caras</option>
+            <option value="8">8 caras</option>
+            <option value="10">10 caras</option>
+            <option value="12">12 caras</option>
+            <option value="20">20 caras</option>
+        </select>
+
 
         <div id="dados" aria-live="polite">
             <div class="dado">?</div>
